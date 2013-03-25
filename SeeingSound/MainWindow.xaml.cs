@@ -39,7 +39,7 @@ namespace SeeingSound
         private void setAudioInfo()
         {
             String s = "Source angle: " + sensor.AudioSource.SoundSourceAngle + "\n" +
-                "Confidence: " + sensor.AudioSource.SoundSourceAngleConfidence +
+                "Confidence: " + sensor.AudioSource.SoundSourceAngleConfidence + "\n" +
                 "Beam Angle: " + sensor.AudioSource.BeamAngle;
             AudioInfo.Text = s;
         }
