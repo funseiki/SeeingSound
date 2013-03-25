@@ -2,15 +2,31 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="350" Width="525"
-        Loaded="Window_Loaded">
+        Loaded="Window_Loaded"
+        Closing="Window_Closing">
     <Grid>
-        <TextBlock x:Name="KinectText"
-                   Height="200" Width="200"
-                   Background="AliceBlue"
-                   Foreground="Black"
-                   Text="Poop"
-                   TextAlignment="Center"
-                   FontSize="15"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0"
+                Background="AliceBlue">
+            <TextBlock x:Name="StatusInfo"
+                       Foreground="Black"
+                       Text="Status"
+                       TextAlignment="Center"
+                       FontSize="30"
+                       VerticalAlignment="Center"
                    />
+        </Border>
+        <Border Grid.Row="1"
+                Background="AntiqueWhite">
+            <TextBlock x:Name="AudioInfo"
+                       Grid.Row="1"
+                       Foreground="Black"
+                       FontSize="20"
+                       Margin="10"
+                   />
+        </Border>
     </Grid>
 </Window>

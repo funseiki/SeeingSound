@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -32,7 +33,23 @@ namespace SeeingSound
 
         private void setStatus(String text)
         {
-            KinectText.Text = text;
+            StatusInfo.Text = text;
+        }
+
+        private void setAudioInfo()
+        {
+            String s = "Source angle: " + sensor.AudioSource.SoundSourceAngle + "\n" +
+                "Confidence: " + sensor.AudioSource.SoundSourceAngleConfidence +
+                "Beam Angle: " + sensor.AudioSource.BeamAngle;
+            AudioInfo.Text = s;
+        }
+
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (sensor == null) return;
+            sensor.AudioSource.Stop();
+            sensor.Stop();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -63,7 +80,30 @@ namespace SeeingSound
             else
             {
                 setStatus("Unable to find the Kinect");
+                return;
             }
+
+            setListeners();
+            sensor.AudioSource.Start();
+        }
+
+        private void setListeners()
+        {
+            if (sensor == null) return;
+
+            sensor.AudioSource.BeamAngleChanged += AudioSource_BeamAngleChanged;
+            sensor.AudioSource.SoundSourceAngleChanged += AudioSource_SoundSourceAngleChanged;
+
+        }
+
+        void AudioSource_SoundSourceAngleChanged(object sender, SoundSourceAngleChangedEventArgs e)
+        {
+            setAudioInfo();
+        }
+
+        void AudioSource_BeamAngleChanged(object sender, BeamAngleChangedEventArgs e)
+        {
+            setAudioInfo();
         }
 
     }
