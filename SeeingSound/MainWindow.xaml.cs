@@ -45,12 +45,25 @@ namespace SeeingSound
             for(int i = 0; i <= 10; i++)
             {
                 Line l = new Line();
-                l.X1 = i*segmentWidth;
-                l.Y1 = DrawingArea.ActualHeight - 10;
-                l.X2 = l.X1;
-                l.Y2 = DrawingArea.ActualHeight;
+                double xLoc = i * segmentWidth;
+                double yLoc = DrawingArea.ActualHeight - 10;
+
+                l.X1 = xLoc;
+                l.Y1 = yLoc;
+                l.X2 = xLoc;
+                l.Y2 = yLoc + 10;
                 l.Stroke = Brushes.Black;
+
+                if(i > 5)
+                {
+                    xLoc -= 20;
+                }
+                TextBlock t = new TextBlock();
+                t.Text = Convert.ToString(i * pixelsPerDegree - 50);
+                t.Margin = new Thickness(xLoc, yLoc - 20, 0, 0);
+
                 DrawingArea.Children.Add(l);
+                DrawingArea.Children.Add(t);
             }
         }
 
