@@ -25,6 +25,8 @@ namespace SeeingSound
     {
 
         protected KinectSensor sensor;
+        protected double segmentWidth = 0;
+        protected int pixelsPerDegree = 10;
 
         public MainWindow()
         {
@@ -33,7 +35,23 @@ namespace SeeingSound
 
         private void setStatus(String text)
         {
-            StatusInfo.Text = text;
+            //StatusInfo.Text = text;
+        }
+
+        private void drawMarkers()
+        {
+            segmentWidth = DrawingArea.ActualWidth / pixelsPerDegree;
+            Console.WriteLine(DrawingArea.ActualWidth);
+            for(int i = 0; i <= 10; i++)
+            {
+                Line l = new Line();
+                l.X1 = i*segmentWidth;
+                l.Y1 = DrawingArea.ActualHeight - 10;
+                l.X2 = l.X1;
+                l.Y2 = DrawingArea.ActualHeight;
+                l.Stroke = Brushes.Black;
+                DrawingArea.Children.Add(l);
+            }
         }
 
         private void setAudioInfo()
@@ -42,6 +60,8 @@ namespace SeeingSound
                 "Confidence: " + sensor.AudioSource.SoundSourceAngleConfidence + "\n" +
                 "Beam Angle: " + sensor.AudioSource.BeamAngle;
             AudioInfo.Text = s;
+            AudioLine.X1 = DrawingArea.ActualWidth / 2;
+            AudioLine.X2 = AudioLine.X1 + Convert.ToDouble(sensor.AudioSource.SoundSourceAngle)*pixelsPerDegree;
         }
 
 
@@ -54,6 +74,7 @@ namespace SeeingSound
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            drawMarkers();
             setStatus("Kinecting...");
             foreach(var potential_sensor in KinectSensor.KinectSensors)
             {
