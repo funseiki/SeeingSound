@@ -27,6 +27,8 @@ namespace SeeingSound
         protected KinectSensor sensor;
         protected double segmentWidth = 0;
         protected int pixelsPerDegree = 10;
+        protected Skeleton[] SkeletonData;
+        protected Dictionary<int, Player> players = new Dictionary<int,Player>();
 
         public MainWindow()
         {
@@ -42,6 +44,7 @@ namespace SeeingSound
         {
             segmentWidth = DrawingArea.ActualWidth / pixelsPerDegree;
             Console.WriteLine(DrawingArea.ActualWidth);
+
             for(int i = 0; i <= 10; i++)
             {
                 Line l = new Line();
@@ -85,6 +88,56 @@ namespace SeeingSound
             sensor.Stop();
         }
 
+        private void setSkeletonData()
+        {
+            sensor.SkeletonStream.Enable();
+            SkeletonData = new Skeleton[sensor.SkeletonStream.FrameSkeletonArrayLength];
+            sensor.SkeletonFrameReady += sensor_SkeletonFrameReady;
+        }
+
+        void sensor_SkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
+        {
+            using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
+            {
+                if (skeletonFrame != null)
+                {
+                    if ((this.SkeletonData == null) || (this.SkeletonData.Length != skeletonFrame.SkeletonArrayLength))
+                    {
+                        this.SkeletonData = new Skeleton[skeletonFrame.SkeletonArrayLength];
+                    }
+                    skeletonFrame.CopySkeletonDataTo(SkeletonData);
+                    foreach (Skeleton skeleton in this.SkeletonData)
+                    {
+                        if (skeleton.TrackingState != SkeletonTrackingState.NotTracked)
+                        {
+                            Player player;
+                            int track_id = skeleton.TrackingId;
+                            if (players.ContainsKey(track_id))
+                            {
+                                player = players[track_id];
+                            }
+                            else
+                            {
+                                player = new Player(track_id);
+                                players.Add(track_id, player);
+                            }
+                            Line l = new Line();
+                            double xLoc = skeleton.Position.X;
+                            double yLoc = skeleton.Position.Y;
+                            Console.WriteLine("Xpos, XposFloat: " + xLoc + "," + skeleton.Position.X);
+                            l.X1 = xLoc;
+                            l.Y1 = yLoc;
+                            l.X2 = xLoc;
+                            l.Y2 = yLoc + 20;
+                            l.Stroke = Brushes.Blue;
+
+                            DrawingArea.Children.Add(l);
+                        }
+                    }
+                }
+            }
+        }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             drawMarkers();
@@ -98,10 +151,14 @@ namespace SeeingSound
                 }
             }
 
+
             if(sensor != null)
             {
                 try
                 {
+                    // Setting skeleton stuff
+                    setSkeletonData();
+
                     sensor.Start();
                     setStatus("Kinected!");
                 }
