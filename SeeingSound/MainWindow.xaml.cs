@@ -122,7 +122,7 @@ namespace SeeingSound
                                 players.Add(track_id, player);
                             }
                             Line l = new Line();
-                            double xLoc = skeleton.Position.X;
+                            double xLoc = (skeleton.Position.X*DrawingArea.ActualWidth/2) + (ActualWidth/2);
                             double yLoc = skeleton.Position.Y;
                             Console.WriteLine("Xpos, XposFloat: " + xLoc + "," + skeleton.Position.X);
                             l.X1 = xLoc;
