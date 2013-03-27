@@ -1,7 +1,10 @@
-﻿using System;
+﻿using Microsoft.Kinect;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -28,6 +31,82 @@ namespace SeeingSound
         protected Skeleton[] SkeletonData;
         protected Binding canvasHeightBinding = new Binding("ActualHeight");
 
+        // Audio sample related
+        /// <summary>
+        /// Number of milliseconds between audio pings
+        /// </summary>
+        protected const int AudioPollingInterval = 50;
+
+        /// <summary>
+        /// How many audio samples to get each millisecond
+        /// </summary>
+        protected const int SamplesPerMillisecond = 16;
+
+        /// <summary>
+        /// How large, in bytes, each audio sample is
+        /// </summary>
+        protected const int BytesPerSample = 2;
+
+        /// <summary>
+        /// The number of audio samples we need before recording the energy here
+        /// </summary>
+        protected int SamplesPerLine = 40;
+
+        /// <summary>
+        /// Used to hold audio energy data
+        /// </summary>
+        protected byte[] audioBuffer = new byte[AudioPollingInterval * SamplesPerMillisecond * BytesPerSample];
+
+        /// <summary>
+        /// Stream to grab audio data from Kinect
+        /// </summary>
+        private Stream audioStream;
+
+        private Thread readingThread;
+
+        private object readingLock = new object();
+        private Boolean _reading = false;
+        private Boolean Reading
+        {
+            get
+            {
+                lock(readingLock)
+                {
+                    return _reading;
+                }
+            }
+            set
+            {
+                lock(readingLock)
+                {
+                    _reading = value;
+                }
+            }
+        }
+
+        private object EnergyLock = new object();
+
+        private double _lastKnownEnergy = 0;
+
+        public Double LastKnownEnergy
+        {
+            get
+            {
+                lock(EnergyLock)
+                {
+                    return _lastKnownEnergy;
+                }
+            }
+
+            set
+            {
+                lock(EnergyLock)
+                {
+                    _lastKnownEnergy = value;
+                }
+            }
+        }
+
         public Wallpaper()
         {
             InitializeComponent();
@@ -39,13 +118,23 @@ namespace SeeingSound
             this.SkeletonData = SkeletonData;
             initializeCanvas();
             initializeSoundSource();
+            initializeReadingThread();
         }
 
         public void shutdown()
         {
-            if (sensor == null) return;
-            sensor.AudioSource.Stop();
-            sensor.Stop();
+            Reading = false;
+            if (readingThread != null)
+            {
+                readingThread.Join();
+            }
+
+            if (sensor != null)
+            {
+                sensor.AudioSource.SoundSourceAngleChanged -= AudioSource_SoundSourceAngleChanged;
+                sensor.AudioSource.Stop();
+                sensor.Stop();
+            }
         }
 
         public void NewSkeletonFound(Skeleton skeleton)
@@ -69,6 +158,13 @@ namespace SeeingSound
         private void initializeCanvas()
         {
             canvasHeightBinding.Source = DrawingArea;
+        }
+
+        private void initializeReadingThread()
+        {
+            Reading = true;
+            readingThread = new Thread(AudioReadingThread);
+            readingThread.Start();
         }
 
         private void initializeSoundSource()
@@ -151,5 +247,34 @@ String s = "Source angle: " + sensor.AudioSource.SoundSourceAngle + "\n" +
  * **/
 
 
+        private void AudioReadingThread()
+        {
+            double minEnergy = 0.2;
+            int sampleCount = 0;
+            double squareSum = 0;
+
+            while (Reading)
+            {
+                int readCount = audioStream.Read(audioBuffer, 0, audioBuffer.Length);
+
+                for (int i = 0; i < readCount; i += BytesPerSample)
+                {
+                    short audioSample = BitConverter.ToInt16(audioBuffer, i);
+                    squareSum += audioSample * audioSample;
+                    ++sampleCount;
+
+                    // We need at least 40 Samples before recording a new energy
+                    if(sampleCount < SamplesPerLine)
+                    {
+                        continue;
+                    }
+
+                    double meanSquare = squareSum / SamplesPerLine;
+                    double energyAmount = Math.Log(meanSquare) / Math.Log(int.MaxValue);
+
+                    LastKnownEnergy = Math.Max(0, energyAmount - minEnergy) / (1 - minEnergy);
+                }
+            }
+        }
     }
 }
