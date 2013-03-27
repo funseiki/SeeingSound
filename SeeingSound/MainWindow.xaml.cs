@@ -71,7 +71,7 @@ namespace SeeingSound
         }
 
         private void setAudioInfo()
-        {
+        {   
             String s = "Source angle: " + sensor.AudioSource.SoundSourceAngle + "\n" +
                 "Confidence: " + sensor.AudioSource.SoundSourceAngleConfidence + "\n" +
                 "Beam Angle: " + sensor.AudioSource.BeamAngle;
@@ -131,7 +131,7 @@ namespace SeeingSound
                             l.Y2 = yLoc + 20;
                             l.Stroke = Brushes.Blue;
 
-                            DrawingArea.Children.Add(l);
+//                            DrawingArea.Children.Add(l);
                         }
                     }
                 }
@@ -190,11 +190,32 @@ namespace SeeingSound
         void AudioSource_SoundSourceAngleChanged(object sender, SoundSourceAngleChangedEventArgs e)
         {
             setAudioInfo();
+            drawPlayerSound();
         }
 
         void AudioSource_BeamAngleChanged(object sender, BeamAngleChangedEventArgs e)
         {
+            // Do we even need to know when the beam angle changes? It might be
+            // useful if we can point the beam at skeletons, or have it
+            // automatically listen by person
             setAudioInfo();
+        }
+
+        void drawPlayerSound()
+        {
+            Player player = findPlayerAtSound();
+            if (player != null)
+            {
+                Line line = player.CreateLineAtCurrentPosition();
+                DrawingArea.Children.Add(line);
+            }
+        }
+
+
+        Player findPlayerAtSound()
+        {
+            // TODO implement
+            return new Player(0);
         }
 
     }
