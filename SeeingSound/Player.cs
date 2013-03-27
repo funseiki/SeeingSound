@@ -28,6 +28,13 @@ namespace SeeingSound
             get { return _color; }
             set { _color = value; }
         }
+
+        protected double _xPosition = 0;
+        public double XPosition {
+            get { return _xPosition; }
+            set { _xPosition = value; }
+        }
+
         public Player(int id)
         {
             Color = new SolidColorBrush(Player.PlayerColors[0]);
@@ -36,19 +43,15 @@ namespace SeeingSound
 
         public Line CreateLineAtCurrentPosition()
         {
-            // TODO implement
             Line line = new Line();
-            /**double xLoc = (skeleton.Position.X * DrawingArea.ActualWidth / 2) + (ActualWidth / 2);
-            double yLoc = skeleton.Position.Y;**/
             
             // Y1, Y2 are set by the main window
-            // xLoc is a stub
-            double xLoc = 200;
-
-            line.X1 = xLoc;
-            line.X2 = xLoc;
+            line.X1 = XPosition;
+            line.X2 = XPosition;
             line.Stroke = this.Color;
+
             return line;
         }
+
     }
 }

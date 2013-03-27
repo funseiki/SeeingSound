@@ -127,6 +127,9 @@ namespace SeeingSound
                                 player = new Player(track_id);
                                 players.Add(track_id, player);
                             }
+
+                            player.XPosition = kinectXToCanvasX(skeleton.Position.X);
+
                             Line l = new Line();
                             double xLoc = (skeleton.Position.X*DrawingArea.ActualWidth/2) + (ActualWidth/2);
                             double yLoc = skeleton.Position.Y;
@@ -142,6 +145,15 @@ namespace SeeingSound
                     }
                 }
             }
+        }
+
+        /* Converts x skeleton coordinate to a position on the canvas
+         * 
+         * TODO take into account that the screen size scales when projected
+         */
+        private double kinectXToCanvasX(float xPosition)
+        {
+            return (xPosition * DrawingArea.ActualWidth / 2) + (ActualWidth / 2);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
