@@ -31,6 +31,11 @@ namespace SeeingSound
         protected Skeleton[] SkeletonData;
         protected Binding canvasHeightBinding = new Binding("ActualHeight");
 
+        /// <summary>
+        /// Maximum line thickness
+        /// </summary>
+        protected int MaxThickness = 10;
+
         // Audio sample related
         /// <summary>
         /// Number of milliseconds between audio pings
@@ -185,7 +190,7 @@ namespace SeeingSound
             if (player != null)
             {
                 Console.WriteLine("we found a player!");
-                Line line = player.CreateLineAtCurrentPosition(Math.Max(1,50*LastKnownEnergy));
+                Line line = player.CreateLineAtCurrentPosition(Math.Max(1,MaxThickness*LastKnownEnergy));
                 line.Y1 = 0;
                 line.SetBinding(Line.Y2Property, canvasHeightBinding);
                 DrawingArea.Children.Add(line);
@@ -272,6 +277,10 @@ String s = "Source angle: " + sensor.AudioSource.SoundSourceAngle + "\n" +
                     double energyAmount = Math.Log(meanSquare) / Math.Log(int.MaxValue);
 
                     LastKnownEnergy = Math.Max(0, energyAmount - minEnergy) / (1 - minEnergy);
+
+                    // Reset these, now that we've read them out
+                    sampleCount = 0;
+                    squareSum = 0;
                 }
             }
         }
