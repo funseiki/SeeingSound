@@ -46,7 +46,7 @@ namespace SeeingSound
             return new SolidColorBrush(PlayerColors.Colors[randomNumber]);
         }
 
-        public Line CreateLineAtCurrentPosition()
+        public Line CreateLineAtCurrentPosition(double thickness)
         {
             Line line = new Line();
             
@@ -54,7 +54,7 @@ namespace SeeingSound
             line.X1 = XPosition;
             line.X2 = XPosition;
             line.Stroke = this.LineColor;
-
+            line.StrokeThickness = thickness;
             return line;
         }
 

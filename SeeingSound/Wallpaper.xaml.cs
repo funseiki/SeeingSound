@@ -171,7 +171,7 @@ namespace SeeingSound
         {
             if (sensor == null) return;
             sensor.AudioSource.SoundSourceAngleChanged += AudioSource_SoundSourceAngleChanged;
-            sensor.AudioSource.Start();
+            audioStream = sensor.AudioSource.Start();
         }
 
         private void AudioSource_SoundSourceAngleChanged(object sender, SoundSourceAngleChangedEventArgs e)
@@ -185,10 +185,9 @@ namespace SeeingSound
             if (player != null)
             {
                 Console.WriteLine("we found a player!");
-                Line line = player.CreateLineAtCurrentPosition();
+                Line line = player.CreateLineAtCurrentPosition(Math.Max(1,50*LastKnownEnergy));
                 line.Y1 = 0;
                 line.SetBinding(Line.Y2Property, canvasHeightBinding);
-
                 DrawingArea.Children.Add(line);
             }
             else
