@@ -25,8 +25,6 @@ namespace SeeingSound
     {
 
         protected KinectSensor sensor;
-        protected double segmentWidth = 0;
-        protected int pixelsPerDegree = 10;
         protected Skeleton[] SkeletonData;
         protected Dictionary<int, Player> players = new Dictionary<int,Player>();
         protected Binding canvasHeightBinding = new Binding("ActualHeight");
@@ -37,25 +35,16 @@ namespace SeeingSound
             InitializeComponent();
         }
 
-        private void setStatus(String text)
-        {
-            //StatusInfo.Text = text;
-        }
-
         private void initializeCanvas()
         {
             canvasHeightBinding.Source = DrawingArea;
         }
 
-        private void setAudioInfo()
-        {   
+            /**
             String s = "Source angle: " + sensor.AudioSource.SoundSourceAngle + "\n" +
                 "Confidence: " + sensor.AudioSource.SoundSourceAngleConfidence + "\n" +
                 "Beam Angle: " + sensor.AudioSource.BeamAngle;
-           /* AudioInfo.Text = s;
-            AudioLine.X1 = DrawingArea.ActualWidth / 2;
-            AudioLine.X2 = AudioLine.X1 + Convert.ToDouble(sensor.AudioSource.SoundSourceAngle)*pixelsPerDegree;*/
-        }
+             * **/
 
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -118,9 +107,8 @@ namespace SeeingSound
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             DrawingArea = WallpaperPage.DrawingArea;
-            drawMarkers();
             initializeCanvas();
-            setStatus("Kinecting...");
+            Console.WriteLine("Kinecting...");
             foreach(var potential_sensor in KinectSensor.KinectSensors)
             {
                 if(potential_sensor.Status == KinectStatus.Connected)
@@ -168,7 +156,6 @@ namespace SeeingSound
 
         void AudioSource_SoundSourceAngleChanged(object sender, SoundSourceAngleChangedEventArgs e)
         {
-            setAudioInfo();
             drawPlayerSound();
         }
 
@@ -177,7 +164,6 @@ namespace SeeingSound
             // Do we even need to know when the beam angle changes? It might be
             // useful if we can point the beam at skeletons, or have it
             // automatically listen by person
-            setAudioInfo();
         }
 
         void drawPlayerSound()
