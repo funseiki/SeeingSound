@@ -36,6 +36,11 @@ namespace SeeingSound
             InitializeComponent();
         }
 
+        private void Window_Loaded(object sender, RoutedEventArgs e) {
+            MainFrame.Source = new Uri("WallpaperPage.xaml", UriKind.Relative);
+        }
+
+/*
         private void setStatus(String text)
         {
             //StatusInfo.Text = text;
@@ -139,6 +144,7 @@ namespace SeeingSound
          * 
          * TODO take into account that the screen size scales when projected
          */
+/*
         private double kinectXToCanvasX(float xPosition)
         {
             return (xPosition * DrawingArea.ActualWidth / 2) + (ActualWidth / 2);
@@ -231,6 +237,7 @@ namespace SeeingSound
          * TODO test this (I need another person and a quiet room to test)
          * TODO use the confidence level and a cutoff for how far away the skeleton and sound can be
          */
+        /*
         Player findPlayerAtSound()
         {
             Skeleton closestSkeleton = null;
@@ -257,6 +264,6 @@ namespace SeeingSound
                 return null;
             }
         }
-
+        */
     }
 }
