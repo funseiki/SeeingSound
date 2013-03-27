@@ -1,35 +1,15 @@
 ﻿<Window x:Class="SeeingSound.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:SeeingSound"
         Title="MainWindow"
         Loaded="Window_Loaded"
         Closing="Window_Closing"
+        Style="{StaticResource FullScreen}"
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
-    <!-- Style="{StaticResource FullScreen}" -->
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="300" />
-            <RowDefinition Height="200" />
-        </Grid.RowDefinitions>
-        <Canvas Grid.Row="0"
-                x:Name="DrawingArea"
-                >
-            <Line X1="0" Y1="0"
-                  X2="0" Y2="{Binding ElementName=DrawingArea, Path=ActualHeight}"
-                  Stroke="Black"
-                  StrokeThickness="4"
-                  x:Name="AudioLine"
-                  />
-        </Canvas>
-        <Border Grid.Row="1"
-                Background="AntiqueWhite">
-            <TextBlock x:Name="AudioInfo"
-                       Grid.Row="1"
-                       Foreground="Black"
-                       FontSize="20"
-                       Margin="10"
-                   />
-        </Border>
+        <local:Wallpaper x:Name="WallpaperPage">
+        </local:Wallpaper>
     </Grid>
 </Window>

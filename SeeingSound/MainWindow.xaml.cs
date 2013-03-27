@@ -30,6 +30,7 @@ namespace SeeingSound
         protected Skeleton[] SkeletonData;
         protected Dictionary<int, Player> players = new Dictionary<int,Player>();
         protected Binding canvasHeightBinding = new Binding("ActualHeight");
+        protected Canvas DrawingArea;
 
         public MainWindow()
         {
@@ -39,36 +40,6 @@ namespace SeeingSound
         private void setStatus(String text)
         {
             //StatusInfo.Text = text;
-        }
-
-        private void drawMarkers()
-        {
-            segmentWidth = DrawingArea.ActualWidth / pixelsPerDegree;
-            Console.WriteLine(DrawingArea.ActualWidth);
-
-            for(int i = 0; i <= 10; i++)
-            {
-                Line l = new Line();
-                double xLoc = i * segmentWidth;
-                double yLoc = DrawingArea.ActualHeight - 10;
-
-                l.X1 = xLoc;
-                l.Y1 = yLoc;
-                l.X2 = xLoc;
-                l.Y2 = yLoc + 10;
-                l.Stroke = Brushes.Black;
-
-                if(i > 5)
-                {
-                    xLoc -= 20;
-                }
-                TextBlock t = new TextBlock();
-                t.Text = Convert.ToString(i * pixelsPerDegree - 50);
-                t.Margin = new Thickness(xLoc, yLoc - 20, 0, 0);
-
-                DrawingArea.Children.Add(l);
-                DrawingArea.Children.Add(t);
-            }
         }
 
         private void initializeCanvas()
@@ -81,9 +52,9 @@ namespace SeeingSound
             String s = "Source angle: " + sensor.AudioSource.SoundSourceAngle + "\n" +
                 "Confidence: " + sensor.AudioSource.SoundSourceAngleConfidence + "\n" +
                 "Beam Angle: " + sensor.AudioSource.BeamAngle;
-            AudioInfo.Text = s;
+           /* AudioInfo.Text = s;
             AudioLine.X1 = DrawingArea.ActualWidth / 2;
-            AudioLine.X2 = AudioLine.X1 + Convert.ToDouble(sensor.AudioSource.SoundSourceAngle)*pixelsPerDegree;
+            AudioLine.X2 = AudioLine.X1 + Convert.ToDouble(sensor.AudioSource.SoundSourceAngle)*pixelsPerDegree;*/
         }
 
 
@@ -146,6 +117,7 @@ namespace SeeingSound
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            DrawingArea = WallpaperPage.DrawingArea;
             drawMarkers();
             initializeCanvas();
             setStatus("Kinecting...");
@@ -257,6 +229,5 @@ namespace SeeingSound
                 return null;
             }
         }
-
     }
 }
