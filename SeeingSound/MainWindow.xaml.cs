@@ -129,18 +129,6 @@ namespace SeeingSound
                             }
 
                             player.XPosition = kinectXToCanvasX(skeleton.Position.X);
-
-                            Line l = new Line();
-                            double xLoc = (skeleton.Position.X*DrawingArea.ActualWidth/2) + (ActualWidth/2);
-                            double yLoc = skeleton.Position.Y;
-                            Console.WriteLine("Xpos, XposFloat: " + xLoc + "," + skeleton.Position.X);
-                            l.X1 = xLoc;
-                            l.Y1 = yLoc;
-                            l.X2 = xLoc;
-                            l.Y2 = yLoc + 20;
-                            l.Stroke = Brushes.Blue;
-
-//                            DrawingArea.Children.Add(l);
                         }
                     }
                 }
@@ -225,19 +213,44 @@ namespace SeeingSound
             Player player = findPlayerAtSound();
             if (player != null)
             {
+                Console.WriteLine("we found a player!");
                 Line line = player.CreateLineAtCurrentPosition();
                 line.Y1 = 0;
                 line.SetBinding(Line.Y2Property, canvasHeightBinding);
-               
+
                 DrawingArea.Children.Add(line);
+            }
+            else {
+                Console.WriteLine("Found sound not player");
             }
         }
 
 
         Player findPlayerAtSound()
         {
-            // TODO implement
-            return new Player(0);
+            Skeleton closestSkeleton = null;
+            double closestAngleDifference = double.PositiveInfinity;
+
+            // go through each skeleton computing it's angle from the center of the kinect, then find the closest angle
+            foreach (Skeleton skeleton in this.SkeletonData.Where(s => (s != null) && (s.TrackingState != SkeletonTrackingState.NotTracked)))
+            {
+                double skeletonAngle = MathHelper.Arcsin(skeleton.Position.X / skeleton.Position.Z);
+                double angleDifference = Math.Abs(skeletonAngle - sensor.AudioSource.SoundSourceAngle);
+                if ( angleDifference < closestAngleDifference)
+                {
+                    closestAngleDifference =angleDifference;
+                    closestSkeleton = skeleton;
+                }
+            }
+
+            if (closestSkeleton != null)
+            {
+                return players[closestSkeleton.TrackingId];
+            }
+            else
+            {
+                return null;
+            }
         }
 
     }
