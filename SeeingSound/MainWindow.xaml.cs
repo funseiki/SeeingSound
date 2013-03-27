@@ -225,7 +225,12 @@ namespace SeeingSound
             }
         }
 
-
+        /*
+         * Find the player closest to the sound generated.
+         * 
+         * TODO test this (I need another person and a quiet room to test)
+         * TODO use the confidence level and a cutoff for how far away the skeleton and sound can be
+         */
         Player findPlayerAtSound()
         {
             Skeleton closestSkeleton = null;
@@ -238,7 +243,7 @@ namespace SeeingSound
                 double angleDifference = Math.Abs(skeletonAngle - sensor.AudioSource.SoundSourceAngle);
                 if ( angleDifference < closestAngleDifference)
                 {
-                    closestAngleDifference =angleDifference;
+                    closestAngleDifference = angleDifference;
                     closestSkeleton = skeleton;
                 }
             }
