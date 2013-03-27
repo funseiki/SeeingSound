@@ -127,17 +127,17 @@ namespace SeeingSound
                     setSkeletonData();
 
                     sensor.Start();
-                    setStatus("Kinected!");
+                    Console.WriteLine("Kinected!");
                 }
                 catch(IOException)
                 {
                     sensor = null;
-                    setStatus("Sensor is in use elsewhere");
+                    Console.WriteLine("Sensor is in use elsewhere");
                 }
             }
             else
             {
-                setStatus("Unable to find the Kinect");
+                Console.WriteLine("Unable to find the Kinect");
                 return;
             }
 
