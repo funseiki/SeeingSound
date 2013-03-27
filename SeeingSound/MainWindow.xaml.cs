@@ -26,32 +26,56 @@ namespace SeeingSound
 
         protected KinectSensor sensor;
         protected Skeleton[] SkeletonData;
-        protected Dictionary<int, Player> players = new Dictionary<int,Player>();
-        protected Binding canvasHeightBinding = new Binding("ActualHeight");
-        protected Canvas DrawingArea;
 
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void initializeCanvas()
+        
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            canvasHeightBinding.Source = DrawingArea;
+
+            Console.WriteLine("Kinecting...");
+            foreach(var potential_sensor in KinectSensor.KinectSensors)
+            {
+                if(potential_sensor.Status == KinectStatus.Connected)
+                {
+                    sensor = potential_sensor;
+                    break;
+                }
+            }
+
+
+            if(sensor != null)
+            {
+                try
+                {
+                    // Setting skeleton stuff
+                    setSkeletonData();
+                    sensor.Start();
+
+                    WallpaperPage.setup(sensor, SkeletonData);
+
+                    Console.WriteLine("Kinected!");
+                }
+                catch(IOException)
+                {
+                    sensor = null;
+                    Console.WriteLine("Sensor is in use elsewhere");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Unable to find the Kinect");
+                return;
+            }
         }
 
-            /**
-            String s = "Source angle: " + sensor.AudioSource.SoundSourceAngle + "\n" +
-                "Confidence: " + sensor.AudioSource.SoundSourceAngleConfidence + "\n" +
-                "Beam Angle: " + sensor.AudioSource.BeamAngle;
-             * **/
-
-
+        
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (sensor == null) return;
-            sensor.AudioSource.Stop();
-            sensor.Stop();
+            WallpaperPage.shutdown();
         }
 
         private void setSkeletonData()
@@ -76,143 +100,10 @@ namespace SeeingSound
                     {
                         if (skeleton.TrackingState != SkeletonTrackingState.NotTracked)
                         {
-                            Player player;
-                            int track_id = skeleton.TrackingId;
-                            if (players.ContainsKey(track_id))
-                            {
-                                player = players[track_id];
-                            }
-                            else
-                            {
-                                player = new Player(track_id);
-                                players.Add(track_id, player);
-                            }
-
-                            player.XPosition = kinectXToCanvasX(skeleton.Position.X);
+                            WallpaperPage.NewSkeletonFound(skeleton);
                         }
                     }
                 }
-            }
-        }
-
-        /* Converts x skeleton coordinate to a position on the canvas
-         * 
-         * TODO take into account that the screen size scales when projected
-         */
-        private double kinectXToCanvasX(float xPosition)
-        {
-            return (xPosition * DrawingArea.ActualWidth / 2) + (ActualWidth / 2);
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            DrawingArea = WallpaperPage.DrawingArea;
-            initializeCanvas();
-            Console.WriteLine("Kinecting...");
-            foreach(var potential_sensor in KinectSensor.KinectSensors)
-            {
-                if(potential_sensor.Status == KinectStatus.Connected)
-                {
-                    sensor = potential_sensor;
-                    break;
-                }
-            }
-
-
-            if(sensor != null)
-            {
-                try
-                {
-                    // Setting skeleton stuff
-                    setSkeletonData();
-
-                    sensor.Start();
-                    Console.WriteLine("Kinected!");
-                }
-                catch(IOException)
-                {
-                    sensor = null;
-                    Console.WriteLine("Sensor is in use elsewhere");
-                }
-            }
-            else
-            {
-                Console.WriteLine("Unable to find the Kinect");
-                return;
-            }
-
-            setListeners();
-            sensor.AudioSource.Start();
-        }
-
-        private void setListeners()
-        {
-            if (sensor == null) return;
-
-            sensor.AudioSource.BeamAngleChanged += AudioSource_BeamAngleChanged;
-            sensor.AudioSource.SoundSourceAngleChanged += AudioSource_SoundSourceAngleChanged;
-
-        }
-
-        void AudioSource_SoundSourceAngleChanged(object sender, SoundSourceAngleChangedEventArgs e)
-        {
-            drawPlayerSound();
-        }
-
-        void AudioSource_BeamAngleChanged(object sender, BeamAngleChangedEventArgs e)
-        {
-            // Do we even need to know when the beam angle changes? It might be
-            // useful if we can point the beam at skeletons, or have it
-            // automatically listen by person
-        }
-
-        void drawPlayerSound()
-        {
-            Player player = findPlayerAtSound();
-            if (player != null)
-            {
-                Console.WriteLine("we found a player!");
-                Line line = player.CreateLineAtCurrentPosition();
-                line.Y1 = 0;
-                line.SetBinding(Line.Y2Property, canvasHeightBinding);
-
-                DrawingArea.Children.Add(line);
-            }
-            else {
-                Console.WriteLine("Found sound not player");
-            }
-        }
-
-        /*
-         * Find the player closest to the sound generated.
-         * 
-         * TODO test this (I need another person and a quiet room to test)
-         * TODO use the confidence level and a cutoff for how far away the skeleton and sound can be
-         */
-        Player findPlayerAtSound()
-        {
-            Skeleton closestSkeleton = null;
-            double closestAngleDifference = double.PositiveInfinity;
-
-            // go through each skeleton computing it's angle from the center of the kinect, then find the closest angle
-            foreach (Skeleton skeleton in this.SkeletonData.Where(s => (s != null) && (s.TrackingState != SkeletonTrackingState.NotTracked)))
-            {
-                double skeletonAngle = MathHelper.Arcsin(skeleton.Position.X / skeleton.Position.Z);
-                double angleDifference = Math.Abs(skeletonAngle - sensor.AudioSource.SoundSourceAngle);
-                if ( angleDifference < closestAngleDifference)
-                {
-                    closestAngleDifference = angleDifference;
-                    closestSkeleton = skeleton;
-                }
-            }
-
-            if (closestSkeleton != null)
-            {
-                return players[closestSkeleton.TrackingId];
-            }
-            else
-            {
-                return null;
             }
         }
     }
