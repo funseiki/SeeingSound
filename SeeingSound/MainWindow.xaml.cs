@@ -29,6 +29,7 @@ namespace SeeingSound
         protected int pixelsPerDegree = 10;
         protected Skeleton[] SkeletonData;
         protected Dictionary<int, Player> players = new Dictionary<int,Player>();
+        protected Binding canvasHeightBinding = new Binding("ActualHeight");
 
         public MainWindow()
         {
@@ -68,6 +69,11 @@ namespace SeeingSound
                 DrawingArea.Children.Add(l);
                 DrawingArea.Children.Add(t);
             }
+        }
+
+        private void initializeCanvas()
+        {
+            canvasHeightBinding.Source = DrawingArea;
         }
 
         private void setAudioInfo()
@@ -141,6 +147,7 @@ namespace SeeingSound
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             drawMarkers();
+            initializeCanvas();
             setStatus("Kinecting...");
             foreach(var potential_sensor in KinectSensor.KinectSensors)
             {
@@ -207,6 +214,9 @@ namespace SeeingSound
             if (player != null)
             {
                 Line line = player.CreateLineAtCurrentPosition();
+                line.Y1 = 0;
+                line.SetBinding(Line.Y2Property, canvasHeightBinding);
+               
                 DrawingArea.Children.Add(line);
             }
         }

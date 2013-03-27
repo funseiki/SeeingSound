@@ -41,16 +41,14 @@ namespace SeeingSound
             /**double xLoc = (skeleton.Position.X * DrawingArea.ActualWidth / 2) + (ActualWidth / 2);
             double yLoc = skeleton.Position.Y;**/
             
-            // These two are stubs
+            // Y1, Y2 are set by the main window
+            // xLoc is a stub
             double xLoc = 200;
-            double yLoc = 0; 
 
             line.X1 = xLoc;
-            line.Y1 = yLoc;
             line.X2 = xLoc;
-            line.Y2 = yLoc + 20;
             line.Stroke = this.Color;
-            throw new NotImplementedException();
+            return line;
         }
     }
 }
