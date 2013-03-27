@@ -14,8 +14,6 @@ namespace SeeingSound
 {
     public class Player
     {
-        static Color[] PlayerColors = { Colors.Aqua, Colors.Beige, Colors.BlanchedAlmond,
-                             Colors.BurlyWood, Colors.Coral, Colors.Cornsilk };
         protected int _skeletonID = -1;
         public int SkeletonID
         {
@@ -23,7 +21,7 @@ namespace SeeingSound
             set { _skeletonID = value; }
         }
         protected SolidColorBrush _color = null;
-        public SolidColorBrush Color
+        public SolidColorBrush LineColor
         {
             get { return _color; }
             set { _color = value; }
@@ -37,8 +35,15 @@ namespace SeeingSound
 
         public Player(int id)
         {
-            Color = new SolidColorBrush(Player.PlayerColors[0]);
+            LineColor = RandomColor();
             SkeletonID = id;
+        }
+
+        private SolidColorBrush RandomColor()
+        {
+            Random random = new Random();
+            int randomNumber = random.Next(0, PlayerColors.Colors.Length);
+            return new SolidColorBrush(PlayerColors.Colors[randomNumber]);
         }
 
         public Line CreateLineAtCurrentPosition()
@@ -48,7 +53,7 @@ namespace SeeingSound
             // Y1, Y2 are set by the main window
             line.X1 = XPosition;
             line.X2 = XPosition;
-            line.Stroke = this.Color;
+            line.Stroke = this.LineColor;
 
             return line;
         }

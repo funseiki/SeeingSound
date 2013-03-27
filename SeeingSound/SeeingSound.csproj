@@ -54,6 +54,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="PlayerColors.cs" />
     <Compile Include="Wallpaper.xaml.cs">
       <DependentUpon>Wallpaper.xaml</DependentUpon>
     </Compile>

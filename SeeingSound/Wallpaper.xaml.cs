@@ -58,6 +58,7 @@ namespace SeeingSound
             }
             else
             {
+                Console.WriteLine("Made new skeleton");
                 player = new Player(track_id);
                 players.Add(track_id, player);
             }

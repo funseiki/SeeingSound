@@ -5,9 +5,9 @@
         Title="MainWindow"
         Loaded="Window_Loaded"
         Closing="Window_Closing"
-        Style="{StaticResource FullScreen}"
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
-
+    <!--        Style="{StaticResource FullScreen}"
+-->
     <Grid>
         <local:Wallpaper x:Name="WallpaperPage">
         </local:Wallpaper>

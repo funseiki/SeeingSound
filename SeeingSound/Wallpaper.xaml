@@ -7,7 +7,7 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <Canvas x:Name="DrawingArea"
-                Background="#efefef">
+                Background="#A5000000">
         </Canvas>
     </Grid>
 </UserControl>
