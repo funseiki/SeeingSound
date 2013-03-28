@@ -191,16 +191,15 @@ namespace SeeingSound
 
             if (player != null)
             {
-                Console.WriteLine("we found a player!");
-                Line line = player.CreateLineAtCurrentPosition(Math.Max(1,MaxThickness*LastKnownEnergy));
-                line.Y1 = 0;
-                line.SetBinding(Line.Y2Property, canvasHeightBinding);
-                DrawingArea.Children.Add(line);
-                ((Storyboard)FindResource("animate")).Begin(line);
-            }
-            else
-            {
-                Console.WriteLine("Found sound not player");
+                double energy = LastKnownEnergy;
+                if (energy > 0.4)
+                {
+                    Line line = player.CreateLineAtCurrentPosition(Math.Max(1, MaxThickness * LastKnownEnergy));
+                    line.Y1 = 0;
+                    line.SetBinding(Line.Y2Property, canvasHeightBinding);
+                    DrawingArea.Children.Add(line);
+                    ((Storyboard)FindResource("animate")).Begin(line);
+                }
             }
         }
 
