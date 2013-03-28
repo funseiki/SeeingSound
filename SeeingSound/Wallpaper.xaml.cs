@@ -17,6 +17,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using Microsoft.Kinect;
+using System.Windows.Media.Animation;
 
 
 namespace SeeingSound
@@ -187,6 +188,7 @@ namespace SeeingSound
         private void drawPlayerSound()
         {
             Player player = findPlayerAtSound();
+
             if (player != null)
             {
                 Console.WriteLine("we found a player!");
@@ -194,6 +196,7 @@ namespace SeeingSound
                 line.Y1 = 0;
                 line.SetBinding(Line.Y2Property, canvasHeightBinding);
                 DrawingArea.Children.Add(line);
+                ((Storyboard)FindResource("animate")).Begin(line);
             }
             else
             {
